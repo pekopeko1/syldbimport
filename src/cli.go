@@ -1,10 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
+	_ "github.com/lib/pq"
 	"io"
 	"os"
+	"path/filepath"
 )
 
 // 終了コード
@@ -62,6 +65,20 @@ func (cli *CLI) Run(args []string) int {
 	folder_id = flags.Args()[0]
 
 	fmt.Println(folder_id)
+	var db_conninfo string
+	db_conninfo = options.GetConnInfo()
+
+	db, err := sql.Open("postgres", db_conninfo)
+	if err != nil {
+		fmt.Println("connection to database failed")
+	}
+	defer db.Close()
+
+	// * if opt_delete {
+	// * db_delete_folder()
+	// * if fail "remove folder failed: %s", folder_id
+
+	db_import_folder(db, folder_id, &options)
 
 	return ExitCodeOK
 }
@@ -89,3 +106,25 @@ Options for syldbimport:
   --delete                      recursively delete folders from DB
   --debug                       show debug console window
 `
+
+func db_import_mh_folder(db *sql.DB, pathname string, options *Options) int {
+	fmt.Println("run db_import_mh_folder")
+	fmt.Print("\nimporting %s ...\n", pathname)
+	return
+}
+
+func db_import_folder_item(db *sql.DB, item string, options *Options) int {
+	fmt.Println("run db_import_folder_item")
+	return
+}
+
+func db_import_folder(db *sql.DB, folder_id string, options *Options) int {
+	if filepath.IsAbs(folder_id) {
+		db_import_mh_folder(db, folder_id, &options)
+	} else {
+		var new_folder_id string
+		new_folder_id = filepath.Abs(folder_id)
+		db_import_mh_folder(db, new_folder_id, &options)
+	}
+	return ExitCodeOK
+}

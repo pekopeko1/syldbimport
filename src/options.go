@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type Options struct {
@@ -30,4 +31,20 @@ func (options *Options) Check() (err error) {
 	}
 	err = nil
 	return err
+}
+
+func (options *Options) GetConnInfo() (conninfo string) {
+	conninfo += "dbname=" + options.dbname
+	if options.hostname != "" {
+		conninfo += " host=" + options.hostname
+	}
+	conninfo += " port=" + strconv.Itoa(options.port)
+	if options.username != "" {
+		conninfo += " user=" + options.username
+	}
+	if options.password != "" {
+		conninfo += " password=" + options.password
+	}
+	fmt.Println(conninfo)
+	return conninfo
 }
