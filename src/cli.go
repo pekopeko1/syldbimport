@@ -31,7 +31,7 @@ func (cli *CLI) Run(args []string) int {
 	}
 
 	if err := options.Check(); err != nil {
-		options.Usage(cli.errStream)
+		options.Usage()
 		return ExitCodeError
 	}
 

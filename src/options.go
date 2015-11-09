@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -33,6 +32,9 @@ func (options *Options) Check() (err error) {
 	case options.port < 0 || options.port > 655335:
 		err = fmt.Errorf("Invalid Arugment")
 		return err
+	case options.folder_id == "":
+		err = fmt.Errorf("Invalid Arugment")
+		return err
 	}
 	err = nil
 	return err
@@ -54,14 +56,8 @@ func (options *Options) GetConnInfo() (conninfo string) {
 	return conninfo
 }
 
-func (options *Options) Usage(output io.Writer) {
-	// オプション引数のパース
-	flags := flag.NewFlagSet("syldbimport", flag.ContinueOnError)
-	flags.SetOutput(output)
-	flags.Usage = func() {
-		fmt.Fprint(os.Stderr, helpText)
-	}
-	flags.Usage()
+func (options *Options) Usage() {
+	fmt.Fprint(os.Stderr, helpText)
 }
 
 func NewOptions(args []string, output io.Writer) (p_options *Options, err error) {
@@ -89,7 +85,7 @@ func NewOptions(args []string, output io.Writer) (p_options *Options, err error)
 		return nil, err
 	}
 	if len(flags.Args()) == 0 {
-		return nil, errors.New("specify target folder.")
+		return nil, fmt.Errorf("specify target folder.")
 	}
 	options.folder_id = flags.Args()[0]
 	p_options = &options
